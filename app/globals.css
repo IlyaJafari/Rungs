@@ -14,8 +14,76 @@
   --color-steel: #e2e0d9;
   --color-slate: #6b6a63;
   --color-iron: #2e4c6d;
+  --color-iron-100: #dce5ec;
+  --color-iron-200: #b8cad9;
+  --color-iron-300: #93b0c6;
   --color-moss: #3f6b45;
+  --color-moss-100: #dce9de;
+  --color-moss-200: #b9d3bd;
+  --color-moss-300: #96bc9c;
   --color-rust: #a34328;
+  --color-rust-100: #f6dcd3;
+  --color-rust-200: #edb9a8;
+  --color-rust-300: #e4967c;
+
+  --animate-slideDownAndFade: slideDownAndFade 400ms
+    cubic-bezier(0.16, 1, 0.3, 1);
+
+  --animate-slideLeftAndFade: slideLeftAndFade 400ms
+    cubic-bezier(0.16, 1, 0.3, 1);
+
+  --animate-slideUpAndFade: slideUpAndFade 400ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  --animate-slideRightAndFade: slideRightAndFade 400ms
+    cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideDownAndFade {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideLeftAndFade {
+  from {
+    opacity: 0;
+    transform: translateX(2px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideUpAndFade {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideRightAndFade {
+  from {
+    opacity: 0;
+    transform: translateX(-2px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 @media (prefers-color-scheme: dark) {

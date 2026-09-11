@@ -57,22 +57,22 @@ function Pricing() {
             high-performance roster.
           </span>
           <ul className="flex flex-col gap-3">
-            <li class="flex gap-2 items-center">
+            <li className="flex gap-2 items-center">
               <Check /> Build and manage training programs
             </li>
-            <li class="flex gap-2 items-center">
+            <li className="flex gap-2 items-center">
               <Check /> Unlimited active clients
             </li>
-            <li class="flex gap-2 items-center">
+            <li className="flex gap-2 items-center">
               <Check /> Client set logging
             </li>
-            <li class="flex gap-2 items-center">
+            <li className="flex gap-2 items-center">
               <Check /> Progress tracking
             </li>
-            <li class="flex gap-2 items-center">
+            <li className="flex gap-2 items-center">
               <Check /> Program editing
             </li>
-            <li class="flex gap-2 items-center">
+            <li className="flex gap-2 items-center">
               <Check /> Coach-client workflow
             </li>
           </ul>

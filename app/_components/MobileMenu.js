@@ -3,8 +3,9 @@
 import { Menu, X } from "@boxicons/react";
 import Link from "next/link";
 import { useState } from "react";
+import SignInButton from "./SignInButton";
 
-function MobileMenu() {
+function MobileMenu({ isLoggedIn }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -19,7 +20,7 @@ function MobileMenu() {
 
       <div
         onClick={() => setIsOpen(false)}
-        className={`fixed inset-0 bg-ink/50 z-40 transition-opacity dueation-300 ${isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
+        className={`fixed inset-0 bg-ink/50 z-40 transition-opacity duration-300 ${isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
       />
 
       <div
@@ -47,18 +48,11 @@ function MobileMenu() {
             </Link>
           </li>
           <li>
-            <Link href="#" onClick={() => setIsOpen(false)}>
-              Sign In
-            </Link>
-          </li>
-          <li>
-            <Link
-              href="#"
+            <SignInButton
+              isLoggedIn={isLoggedIn}
+              variant="mobile"
               onClick={() => setIsOpen(false)}
-              className="bg-iron text-paper px-4 py-2 rounded-xl inline-block"
-            >
-              Get Started
-            </Link>
+            />
           </li>
         </ul>
       </div>

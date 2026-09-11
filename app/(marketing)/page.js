@@ -8,10 +8,18 @@ import Loop from "../_components/Loop";
 import Capabilities from "../_components/Capabilities";
 import Metrics from "../_components/Metrics";
 import Footer from "../_components/Footer";
+import Header from "../_components/Header";
+import createClient from "../_lib/supabase";
 
-function Page() {
+async function Page() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   return (
     <>
+      <Header isLoggedIn={!!user} />
       <section className="py-20 md:py-32">
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-8 items-center w-full">

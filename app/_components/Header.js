@@ -5,8 +5,9 @@ import Logo from "./Logo";
 import MobileMenu from "./MobileMenu";
 import { motion, useMotionValueEvent, useScroll } from "motion/react";
 import { useState } from "react";
+import SignInButton from "./SignInButton";
 
-function Header() {
+function Header({ isLoggedIn }) {
   const { scrollY } = useScroll();
   const [hidden, setHidden] = useState(false);
 
@@ -24,7 +25,9 @@ function Header() {
     >
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between py-4 ">
-          <Logo />
+          <Link href="/" aria-label="Rungs home">
+            <Logo />
+          </Link>
 
           <div className="hidden md:block">
             <ul className="flex gap-8">
@@ -40,19 +43,9 @@ function Header() {
             </ul>
           </div>
 
-          <div className="hidden md:flex items-center gap-3">
-            <Link href="#" className="hover:text-slate">
-              Sign In
-            </Link>
-            <Link
-              href="#"
-              className="bg-iron text-paper border-2 border-transparent px-4 py-2 rounded-xl hover:bg-paper hover:text-iron hover:border-iron transition-colors"
-            >
-              Get Started
-            </Link>
-          </div>
+          <SignInButton isLoggedIn={isLoggedIn} variant="desktop" />
 
-          <MobileMenu />
+          <MobileMenu isLoggedIn={isLoggedIn} />
         </div>
       </div>
     </motion.header>

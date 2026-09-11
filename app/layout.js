@@ -26,8 +26,6 @@ export default function RootLayout({ children }) {
       className={`${ibmPlexSans.variable} ${ibmPlexMono.variable} antialiased `}
     >
       <body className="flex flex-col font-sans min-h-screen bg-paper text-ink">
-        <Header />
-
         <div>
           <main className="w-full">{children}</main>
         </div>
