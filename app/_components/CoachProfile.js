@@ -3,6 +3,7 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import SignOutButtonProfile from "./SignOutButtonProfile";
 import { PlusCircle, UserCircle } from "@boxicons/react";
+import Link from "next/link";
 
 function CoachProfile({ coach }) {
   function getInitials(fullName) {
@@ -45,9 +46,11 @@ function CoachProfile({ coach }) {
             {coach?.full_name}
           </DropdownMenu.Item>
 
-          <DropdownMenu.Item className="flex items-center gap-2 font-medium px-3 py-2 text-sm rounded-lg cursor-pointer outline-none hover:bg-slate/10">
-            <PlusCircle height={16} width={16} />
-            Add client
+          <DropdownMenu.Item className="font-medium px-3 py-2 text-sm rounded-lg cursor-pointer outline-none hover:bg-slate/10">
+            <Link href="/invite" className="flex items-center gap-2">
+              <PlusCircle height={16} width={16} />
+              Add client
+            </Link>
           </DropdownMenu.Item>
 
           <DropdownMenu.Separator className="h-px bg-steel my-1" />

@@ -12,7 +12,7 @@ async function Page() {
   const clients = await getClients();
 
   return (
-    <div className="flex flex-col gap-8 pb-20">
+    <div className="flex flex-col gap-8">
       <h1 className="text-4xl font-medium ">Manage Work</h1>
 
       <Stats />
