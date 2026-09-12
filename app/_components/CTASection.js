@@ -6,8 +6,8 @@ import Link from "next/link";
 function CTASection() {
   return (
     <motion.div
-      initial={{ clipPath: "inset(100% 0% 0% 0%)" }}
-      whileInView={{ clipPath: "inset(0% 0% 0% 0%)" }}
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.8, ease: [0.65, 0, 0.35, 1] }}
       className="bg-ink text-paper py-24 px-6 md:px-24 text-center flex flex-col items-center gap-5"
