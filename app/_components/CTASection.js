@@ -5,7 +5,25 @@ import Link from "next/link";
 
 function CTASection() {
   return (
-    <motion.div className="bg-ink text-paper py-24 px-6 md:px-24 text-center flex flex-col items-center gap-5">
+    <motion.div
+      initial={{
+        clipPath: "inset(100% 0% 0% 0%)",
+        opacity: 0,
+      }}
+      whileInView={{
+        clipPath: "inset(0% 0% 0% 0%)",
+        opacity: 1,
+      }}
+      viewport={{
+        once: true,
+        amount: 0.1,
+      }}
+      transition={{
+        duration: 0.8,
+        ease: [0.65, 0, 0.35, 1],
+      }}
+      className="bg-ink text-paper py-24 px-6 md:px-24 text-center flex flex-col items-center gap-5"
+    >
       <h2 className="text-4xl md:text-5xl font-medium text-center">
         Ready to professionalize you performance workflow?
       </h2>
