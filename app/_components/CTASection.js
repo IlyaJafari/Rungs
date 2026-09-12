@@ -7,16 +7,14 @@ function CTASection() {
   return (
     <motion.div
       initial={{
-        clipPath: "inset(100% 0% 0% 0%)",
-        opacity: 0,
+        clipPath: "inset(100% 0 0 0)",
       }}
       whileInView={{
-        clipPath: "inset(0% 0% 0% 0%)",
-        opacity: 1,
+        clipPath: "inset(0 0 0 0)",
       }}
       viewport={{
         once: true,
-        amount: 0.1,
+        amount: "some",
       }}
       transition={{
         duration: 0.8,
