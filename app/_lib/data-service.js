@@ -24,13 +24,32 @@ export async function getClient(id) {
 
   const { data, error } = await supabase
     .from("clients")
-    .select("id, status, joined_at, profiles(full_name)")
+    .select(
+      "id, status, joined_at, profiles!clients_profile_id_fkey(full_name)",
+    )
     .eq("id", id)
     .single();
 
   if (error) {
     console.log(error);
     notFound();
+  }
+
+  return data;
+}
+
+export async function getBodyWeightLogs(clientId) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("body_weight_logs")
+    .select("id, weight, logged_at")
+    .eq("client_id", clientId)
+    .order("logged_at", { ascending: true });
+
+  if (error) {
+    console.error(error);
+    throw new Error("Body weight logs could not be loaded");
   }
 
   return data;
@@ -143,6 +162,103 @@ export async function getExercises(workoutId) {
   return data;
 }
 
+export async function getTotalPRs(clientId) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("logged_sets")
+    .select("actual_weight, logged_at, exercises(name)")
+    .eq("client_id", clientId)
+    .not("actual_weight", "is", null)
+    .order("logged_at", { ascending: true });
+
+  if (error) {
+    console.error(error);
+    throw new Error("Logged sets could not be loaded");
+  }
+
+  const bestSoFar = {};
+  let prCount = 0;
+
+  for (const set of data) {
+    const exerciseName = set.exercises?.name?.trim().toLowerCase();
+    if (!exerciseName) continue;
+
+    const weight = set.actual_weight;
+
+    if (!(exerciseName in bestSoFar)) {
+      bestSoFar[exerciseName] = weight;
+      continue;
+    }
+
+    if (weight > bestSoFar[exerciseName]) {
+      prCount++;
+      bestSoFar[exerciseName] = weight;
+    }
+  }
+
+  return prCount;
+}
+
+export async function getAvgIntensity(clientId) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("logged_sets")
+    .select("actual_rpe")
+    .eq("client_id", clientId)
+    .not("actual_rpe", "is", null);
+
+  if (error) {
+    console.error(error);
+    throw new Error("Logged sets could not be loaded");
+  }
+
+  if (data.length === 0) return null;
+
+  const sum = data.reduce((total, set) => total + set.actual_rpe, 0);
+  return sum / data.length;
+}
+
+export async function getTotalVolume(clientId) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("logged_sets")
+    .select("actual_reps, actual_weight")
+    .eq("client_id", clientId)
+    .not("actual_weight", "is", null);
+
+  if (error) {
+    console.error(error);
+    throw new Error("Logged sets could not be loaded");
+  }
+
+  return data.reduce(
+    (total, set) => total + set.actual_reps * set.actual_weight,
+    0,
+  );
+}
+
+export async function getLastLoggedAt(clientId) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("logged_sets")
+    .select("logged_at")
+    .eq("client_id", clientId)
+    .order("logged_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    console.error(error);
+    throw new Error("Logged sets could not be loaded");
+  }
+
+  return data?.logged_at ?? null;
+}
+
 export async function getLoggedSets(exerciseId) {
   const supabase = await createClient();
 
@@ -158,6 +274,159 @@ export async function getLoggedSets(exerciseId) {
   }
 
   return data;
+}
+
+export async function getCoachNotes(clientId) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("coach_notes")
+    .select("id, content, created_at")
+    .eq("client_id", clientId)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error(error);
+    throw new Error("Coach notes could not be loaded");
+  }
+
+  return data;
+}
+
+export async function getPersonalNotes() {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return [];
+
+  const { data, error } = await supabase
+    .from("coach_personal_notes")
+    .select("id, content, created_at")
+    .eq("coach_id", user.id)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error(error);
+    throw new Error("Personal notes could not be loaded");
+  }
+
+  return data;
+}
+
+export async function getRecentActivity(clientId, limit = 10) {
+  const supabase = await createClient();
+
+  // Workout logged
+  const { data: loggedSets, error: setsErr } = await supabase
+    .from("logged_sets")
+    .select("logged_at, exercises(workout_id, workouts(name))")
+    .eq("client_id", clientId);
+
+  if (setsErr) {
+    console.error(setsErr);
+    throw new Error("Activity could not be loaded");
+  }
+
+  const workoutGroups = {};
+  for (const set of loggedSets) {
+    const workoutId = set.exercises?.workout_id;
+    const workoutName = set.exercises?.workouts?.name ?? "Workout";
+    if (!workoutId) continue;
+
+    const day = set.logged_at.slice(0, 10);
+    const key = `${workoutId}-${day}`;
+
+    if (!workoutGroups[key] || set.logged_at < workoutGroups[key].timestamp) {
+      workoutGroups[key] = { timestamp: set.logged_at, workoutName };
+    }
+  }
+
+  const workoutEvents = Object.values(workoutGroups).map((w) => ({
+    type: "workout_logged",
+    timestamp: w.timestamp,
+    title: "Workout Logged",
+    description: `Completed '${w.workoutName}'`,
+  }));
+
+  //PR Achieved
+  const { data: prSets, error: prErr } = await supabase
+    .from("logged_sets")
+    .select("actual_weight, logged_at, exercises(name)")
+    .eq("client_id", clientId)
+    .not("actual_weight", "is", null)
+    .order("logged_at", { ascending: true });
+
+  if (prErr) {
+    console.error(prErr);
+    throw new Error("Activity could not be loaded");
+  }
+
+  const bestSoFar = {};
+  const prEvents = [];
+  for (const set of prSets) {
+    const name = set.exercises?.name?.trim().toLowerCase();
+    if (!name) continue;
+    const weight = set.actual_weight;
+
+    if (!(name in bestSoFar)) {
+      bestSoFar[name] = weight;
+      continue;
+    }
+
+    if (weight > bestSoFar[name]) {
+      prEvents.push({
+        type: "pr",
+        timestamp: set.logged_at,
+        title: "PR Achieved",
+        description: `New best on '${set.exercises.name}': ${weight}kg (+${(weight - bestSoFar[name]).toFixed(1)}kg)`,
+      });
+      bestSoFar[name] = weight;
+    }
+  }
+
+  // Feedback: coach notes
+  const { data: notes, error: notesErr } = await supabase
+    .from("coach_notes")
+    .select("created_at")
+    .eq("client_id", clientId);
+
+  if (notesErr) {
+    console.error(notesErr);
+    throw new Error("Activity could not be loaded");
+  }
+
+  const feedbackEvents = notes.map((note) => ({
+    type: "feedback",
+    timestamp: note.created_at,
+    title: "Feedback",
+    description: "A note was added.",
+  }));
+
+  // Program Assigned
+  const { data: programs, error: programsErr } = await supabase
+    .from("programs")
+    .select("name, created_at")
+    .eq("client_id", clientId);
+
+  if (programsErr) {
+    console.error(programsErr);
+    throw new Error("Activity could not be loaded");
+  }
+
+  const programEvents = programs.map((program) => ({
+    type: "program_assigned",
+    timestamp: program.created_at,
+    title: "Program Assigned",
+    description: `'${program.name}' added.`,
+  }));
+
+  // Merge
+  return [...workoutEvents, ...prEvents, ...feedbackEvents, ...programEvents]
+    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+    .slice(0, limit);
 }
 
 /////////////

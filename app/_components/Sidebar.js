@@ -17,7 +17,7 @@ function Sidebar() {
           <Dashboard />
           <span>Dashboard</span>
         </NavLink>
-        <NavLink href="/athletes">
+        <NavLink href="/clients">
           <Group />
           <span>Athletes</span>
         </NavLink>

@@ -1,4 +1,4 @@
-import { getClients } from "@/app/_lib/data-service";
+import { getClients, getPersonalNotes } from "@/app/_lib/data-service";
 import Stats from "@/app/_components/Stats";
 import AthleteSummaryTable from "@/app/_components/AthleteSummaryTable";
 import TakeNotes from "@/app/_components/TakeNotes";
@@ -10,6 +10,7 @@ export const metadata = {
 
 async function Page() {
   const clients = await getClients();
+  const personalNotes = await getPersonalNotes();
 
   return (
     <div className="flex flex-col gap-8">
@@ -20,7 +21,7 @@ async function Page() {
       <AthleteSummaryTable clients={clients} />
 
       <div className="flex flex-col md:grid grid-cols-2 gap-4">
-        <TakeNotes />
+        <TakeNotes notes={personalNotes} />
         <AttentionList />
       </div>
     </div>

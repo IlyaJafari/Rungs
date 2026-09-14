@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import { Avatar, getActiveProgram, StatusBadge } from "../_utils/helpers";
+import Link from "next/link";
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 10;
 
-function AthleteSummaryTable({ clients }) {
+function AthleteTable({ clients }) {
   const [page, setPage] = useState(1);
+  console.log(clients);
 
   const totalPages = Math.ceil(clients.length / PAGE_SIZE);
   const startIndex = (page - 1) * PAGE_SIZE;
@@ -38,12 +40,15 @@ function AthleteSummaryTable({ clients }) {
               return (
                 <tr key={client.id}>
                   <td className="text-left font-medium px-4 py-4">
-                    <div className="flex items-center gap-3">
+                    <Link
+                      href={`/clients/${client.id}`}
+                      className="flex items-center gap-3"
+                    >
                       <Avatar client={client} />
-                      <div className="flex flex-col">
+                      <div className="flex flex-col hover:underline">
                         <span>{client.profiles?.full_name}</span>
                       </div>
-                    </div>
+                    </Link>
                   </td>
                   <td className="text-left px-4 py-4">
                     {program ? (
@@ -82,14 +87,17 @@ function AthleteSummaryTable({ clients }) {
               className="rounded-xl border border-steel p-4 bg-paper"
             >
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
+                <Link
+                  href={`/clients/${client.id}`}
+                  className="flex items-center gap-3"
+                >
                   <Avatar client={client} />
                   <div className="flex flex-col">
                     <span className="font-medium text-ink">
                       {client.profiles?.full_name}
                     </span>
                   </div>
-                </div>
+                </Link>
                 <StatusBadge status={client.status} />
               </div>
 
@@ -142,4 +150,4 @@ function AthleteSummaryTable({ clients }) {
   );
 }
 
-export default AthleteSummaryTable;
+export default AthleteTable;

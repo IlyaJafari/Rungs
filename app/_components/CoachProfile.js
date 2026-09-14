@@ -28,7 +28,7 @@ function CoachProfile({ coach }) {
               className="w-11 h-11 rounded-xl object-cover"
             />
           ) : (
-            <div className="w-11 h-11 rounded-xl bg-iron-100 flex items-center justify-center text-sm font-medium">
+            <div className="w-10 h-10 rounded-xl bg-iron-100 flex items-center justify-center text-sm font-medium">
               {getInitials(coach?.full_name)}
             </div>
           )}

@@ -27,7 +27,7 @@ async function Page() {
               <span className="text-sm text-iron">
                 PROFESSIONAL PERFORMANCE MANAGEMENT
               </span>
-              <h1 className="text-5xl font-semibold">
+              <h1 className="text-3xl md:text-5xl font-semibold">
                 Rungs replaces spreadsheet and Instagram DM workflows for
                 strength coaches.
               </h1>

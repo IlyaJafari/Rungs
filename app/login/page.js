@@ -2,7 +2,7 @@ import { signInWithGoogle } from "@/app/_lib/actions";
 
 function Page() {
   return (
-    <div className="flex items-center justify-center min-h-screen">
+    <div className="max-w-7xl flex items-center justify-center min-h-screen p-6">
       <form
         action={signInWithGoogle}
         className="flex flex-col gap-2 bg-steel p-20 rounded-xl shadow-md border-2 border-slate/10"

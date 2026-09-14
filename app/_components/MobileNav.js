@@ -11,7 +11,7 @@ function MobileNav() {
 
   const tabs = [
     { href: "/dashboard", label: "Dashboard", Icon: Dashboard },
-    { href: "/athletes", label: "Athletes", Icon: Group },
+    { href: "/clients", label: "Clients", Icon: Group },
     { href: "/invite", label: "Invite", Icon: PlusCircle },
   ];
 
