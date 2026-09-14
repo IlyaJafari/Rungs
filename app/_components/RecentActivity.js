@@ -3,9 +3,9 @@ import { timeAgo } from "../_utils/helpers";
 
 function RecentActivity({ activity }) {
   return (
-    <div className="rounded-xl border-2 border-steel">
+    <div className="rounded-xl border-2 border-steel h-full">
       <div className="flex items-center gap-2 p-4 border-b-2 border-steel">
-        <Clock5 />
+        <Clock5 fill="#2e4c6d" />
         <h3 className="text-sm md:text-lg uppercase">Recent Activity</h3>
       </div>
       <div className="divide-y divide-steel">

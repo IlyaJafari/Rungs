@@ -57,7 +57,7 @@ function CoachSummary({ coachNotes, client }) {
     <div className="border-2 border-steel rounded-xl">
       <div className="flex items-center justify-between border-b-2 p-4 border-steel">
         <div className="flex items-center gap-2">
-          <FileDetail />
+          <FileDetail fill="#2e4c6d" />
           <h3 className="uppercase text-sm md:text-lg">
             coach summary & observations
           </h3>

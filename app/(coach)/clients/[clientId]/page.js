@@ -1,3 +1,4 @@
+import ActivePrograms from "@/app/_components/ActivePrograms";
 import ClientStats from "@/app/_components/ClientStats";
 import CoachSummary from "@/app/_components/CoachSummary";
 import RecentActivity from "@/app/_components/RecentActivity";
@@ -57,8 +58,9 @@ async function Page({ params }) {
       <ClientStats client={client} />
 
       <div className="flex flex-col gap-4 lg:grid grid-cols-3">
-        <div className="lg:col-span-2">
+        <div className="flex flex-col gap-4 lg:col-span-2">
           <CoachSummary coachNotes={coachNotes} client={client} />
+          <ActivePrograms client={client} />
         </div>
 
         <div className="lg:col-span-1">
