@@ -6,7 +6,7 @@ function RecentActivity({ activity }) {
     <div className="rounded-xl border-2 border-steel">
       <div className="flex items-center gap-2 p-4 border-b-2 border-steel">
         <Clock5 />
-        <h3 className="text-lg uppercase">Recent Activity</h3>
+        <h3 className="text-sm md:text-lg uppercase">Recent Activity</h3>
       </div>
       <div className="divide-y divide-steel">
         {activity.map((event, i) => (

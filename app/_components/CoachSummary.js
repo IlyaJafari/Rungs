@@ -58,17 +58,19 @@ function CoachSummary({ coachNotes, client }) {
       <div className="flex items-center justify-between border-b-2 p-4 border-steel">
         <div className="flex items-center gap-2">
           <FileDetail />
-          <h3 className="uppercase text-lg">coach summary & observations</h3>
+          <h3 className="uppercase text-sm md:text-lg">
+            coach summary & observations
+          </h3>
         </div>
 
         {!isAdding && (
           <button
             type="button"
             onClick={() => setIsAdding(true)}
-            className="flex items-center gap-2 text-paper bg-iron text-sm px-4 py-2 rounded-xl cursor-pointer"
+            className="flex items-center gap-2 text-paper bg-iron text-sm p-3 md:px-4 md:py-2 rounded-xl cursor-pointer"
           >
             <Plus width={16} height={16} />
-            <span className="font-medium">Add Note</span>
+            <span className="hidden md:inline-block font-medium">Add Note</span>
           </button>
         )}
       </div>

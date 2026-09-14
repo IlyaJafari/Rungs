@@ -33,17 +33,24 @@ async function Page({ params }) {
       </Link>
 
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center justify-center gap-4">
           <Avatar client={client} width={64} height={64} />
-          <h3 className="text-3xl font-bold">{client.profiles.full_name}</h3>
-          <StatusBadge status={client.status} />
+          <div className="flex flex-col gap-1">
+            <h3 className="text-2xl md:text-3xl font-bold">
+              {client.profiles.full_name}
+            </h3>
+            <div>
+              <StatusBadge status={client.status} />
+            </div>
+          </div>
         </div>
         <Link
           href="#"
-          className="flex gap-2 bg-iron text-paper px-4 py-2 rounded-xl"
+          aria-label="Open program editor"
+          className="flex items-center gap-2 text-sm bg-iron text-paper p-2 md:px-4 md:py-2 rounded-xl"
         >
           <ArrowOutUpRightSquare />
-          Program Editor
+          <span className="hidden md:inline-block">Program Editor</span>
         </Link>
       </div>
 
