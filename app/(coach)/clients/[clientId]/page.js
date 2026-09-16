@@ -46,12 +46,12 @@ async function Page({ params }) {
           </div>
         </div>
         <Link
-          href="#"
+          href={`/program-editor/new-program?clientId=${client.id}`}
           aria-label="Open program editor"
           className="flex items-center gap-2 text-sm bg-iron text-paper p-2 md:px-4 md:py-2 rounded-xl"
         >
           <ArrowOutUpRightSquare />
-          <span className="hidden md:inline-block">Program Editor</span>
+          <span className="hidden md:inline-block">Create Program</span>
         </Link>
       </div>
 

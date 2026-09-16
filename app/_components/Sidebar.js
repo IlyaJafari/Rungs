@@ -2,7 +2,13 @@
 
 import Link from "next/link";
 import Logo from "./Logo";
-import { Dashboard, Group, HelpCircle, PlusCircle } from "@boxicons/react";
+import {
+  Dashboard,
+  FilePlus,
+  Group,
+  HelpCircle,
+  PlusCircle,
+} from "@boxicons/react";
 import NavLink from "./NavLink";
 import SignOutButton from "./SignOutButton";
 
@@ -21,8 +27,13 @@ function Sidebar() {
           <Group />
           <span>Athletes</span>
         </NavLink>
+        <NavLink href="/program-editor/new-program">
+          <FilePlus />
+          <span>Program Editor</span>
+        </NavLink>
         <NavLink href="/invite" coloredButton={true}>
-          {<PlusCircle />} Add Client
+          <PlusCircle />
+          <span>Add Client</span>
         </NavLink>
       </div>
 

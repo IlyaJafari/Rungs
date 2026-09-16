@@ -11,7 +11,7 @@ function NavLink({ href, children, coloredButton }) {
   return (
     <Link
       href={href}
-      className={`flex items-center gap-2 pl-3 pr-20 py-2 rounded-xl ${isColoredButton ? "text-iron" : ""} ${isSelected ? "bg-paper" : ""}`}
+      className={`flex items-center gap-2 pl-3 py-2 rounded-xl ${isColoredButton ? "text-iron" : ""} ${isSelected ? "bg-paper" : ""}`}
     >
       {children}
     </Link>

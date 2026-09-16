@@ -1,6 +1,6 @@
 "use client";
 
-import { Dashboard, Group, PlusCircle } from "@boxicons/react";
+import { Dashboard, Group, FilePlus, PlusCircle } from "@boxicons/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -12,6 +12,11 @@ function MobileNav() {
   const tabs = [
     { href: "/dashboard", label: "Dashboard", Icon: Dashboard },
     { href: "/clients", label: "Clients", Icon: Group },
+    {
+      href: "/program-editor/new-program",
+      label: "ProgramEditor",
+      Icon: FilePlus,
+    },
     { href: "/invite", label: "Invite", Icon: PlusCircle },
   ];
 

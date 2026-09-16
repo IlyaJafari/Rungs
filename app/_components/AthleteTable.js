@@ -8,7 +8,6 @@ const PAGE_SIZE = 10;
 
 function AthleteTable({ clients }) {
   const [page, setPage] = useState(1);
-  console.log(clients);
 
   const totalPages = Math.ceil(clients.length / PAGE_SIZE);
   const startIndex = (page - 1) * PAGE_SIZE;

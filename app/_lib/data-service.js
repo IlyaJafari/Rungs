@@ -146,6 +146,26 @@ export async function getWorkouts(programId) {
   return data;
 }
 
+export async function getWorkoutsForWeek(programId, weekNumber) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("workouts")
+    .select(
+      "id, day_number, name, exercises(id, name, target_sets, target_reps, target_weight)",
+    )
+    .eq("program_id", programId)
+    .eq("week_number", weekNumber)
+    .order("day_number");
+
+  if (error) {
+    console.error(error);
+    throw new Error("Workouts could not be loaded");
+  }
+
+  return data;
+}
+
 export async function getExercises(workoutId) {
   const supabase = await createClient();
 
@@ -348,7 +368,7 @@ export async function getRecentActivity(clientId, limit = 10) {
     type: "workout_logged",
     timestamp: w.timestamp,
     title: "Workout Logged",
-    description: `Completed '${w.workoutName}'`,
+    description: `Completed "${w.workoutName}"`,
   }));
 
   //PR Achieved
@@ -420,7 +440,7 @@ export async function getRecentActivity(clientId, limit = 10) {
     type: "program_assigned",
     timestamp: program.created_at,
     title: "Program Assigned",
-    description: `'${program.name}' added.`,
+    description: `"${program.name}" added.`,
   }));
 
   // Merge
