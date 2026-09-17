@@ -13,7 +13,7 @@ function MobileNav() {
     { href: "/dashboard", label: "Dashboard", Icon: Dashboard },
     { href: "/clients", label: "Clients", Icon: Group },
     {
-      href: "/program-editor/new-program",
+      href: "/programs/new",
       label: "ProgramEditor",
       Icon: FilePlus,
     },
