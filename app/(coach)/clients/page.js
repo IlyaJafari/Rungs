@@ -1,6 +1,10 @@
 import AthleteTable from "@/app/_components/AthleteTable";
 import { getClients } from "@/app/_lib/data-service";
 
+export const metadata = {
+  title: "Athletes",
+};
+
 async function page() {
   const clients = await getClients();
 

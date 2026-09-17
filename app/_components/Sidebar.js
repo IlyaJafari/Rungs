@@ -27,7 +27,7 @@ function Sidebar() {
           <Group />
           <span>Athletes</span>
         </NavLink>
-        <NavLink href="/program-editor/new-program">
+        <NavLink href="/programs/new">
           <FilePlus />
           <span>Program Editor</span>
         </NavLink>

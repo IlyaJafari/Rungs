@@ -96,6 +96,17 @@ export async function deleteCoachNote(noteId, clientId) {
 export async function createProgramWithWeeks(programData) {
   const supabase = await createClient();
 
+  const { error: deactivateErr } = await supabase
+    .from("programs")
+    .update({ status: "completed" })
+    .eq("client_id", programData.clientId)
+    .eq("status", "active");
+
+  if (deactivateErr) {
+    console.error(deactivateErr);
+    throw new Error("Could not update previous program");
+  }
+
   const { data: program, error: programErr } = await supabase
     .from("programs")
     .insert({
@@ -155,4 +166,94 @@ export async function createProgramWithWeeks(programData) {
     revalidatePath(`/clients/${programData.clientId}`);
     redirect(`/clients/${programData.clientId}/programs/${program.id}`);
   }
+}
+
+export async function checkProgramHasLoggedData(programId) {
+  const supabase = await createClient();
+
+  const { count, error } = await supabase
+    .from("logged_sets")
+    .select("id, exercises!inner(workout_id, workouts!inner(program_id))", {
+      count: "exact",
+      head: true,
+    })
+    .eq("exercises.workouts.program_id", programId);
+
+  if (error) {
+    console.error(error);
+    throw new Error("Could not check program history");
+  }
+
+  return count > 0;
+}
+
+export async function updateProgramWithWeeks(programId, programData) {
+  const supabase = await createClient();
+
+  const { error: programErr } = await supabase
+    .from("programs")
+    .update({
+      name: programData.name,
+      start_date: programData.startDate,
+    })
+    .eq("id", programId);
+
+  if (programErr) {
+    console.error(programErr);
+    throw new Error("Program could not be updated");
+  }
+
+  const { error: deleteErr } = await supabase
+    .from("workouts")
+    .delete()
+    .eq("program_id", programId);
+
+  if (deleteErr) {
+    console.error(deleteErr);
+    throw new Error("Existing program structure could not be cleared");
+  }
+
+  for (const week of programData.weeks) {
+    for (const day of week.days) {
+      const { data: workout, error: workoutErr } = await supabase
+        .from("workouts")
+        .insert({
+          program_id: programId,
+          week_number: week.weekNumber,
+          day_number: day.dayNumber,
+          name: day.name || `Day ${day.dayNumber}`,
+        })
+        .select()
+        .single();
+
+      if (workoutErr) {
+        console.error(workoutErr);
+        throw new Error("Workout could not be created");
+      }
+
+      const exercisesToInsert = day.exercises
+        .filter((ex) => ex.name.trim() !== "")
+        .map((ex) => ({
+          workout_id: workout.id,
+          name: ex.name,
+          target_sets: Number(ex.targetSets) || 0,
+          target_reps: Number(ex.targetReps) || 0,
+          target_weight: ex.targetWeight ? Number(ex.targetWeight) : null,
+        }));
+
+      if (exercisesToInsert.length > 0) {
+        const { error: exErr } = await supabase
+          .from("exercises")
+          .insert(exercisesToInsert);
+
+        if (exErr) {
+          console.error(exErr);
+          throw new Error("Exercise could not be created");
+        }
+      }
+    }
+  }
+
+  revalidatePath(`/clients/${programData.clientId}`);
+  redirect(`/clients/${programData.clientId}/programs/${programId}`);
 }

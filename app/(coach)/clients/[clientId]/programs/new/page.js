@@ -2,8 +2,8 @@ import ProgramEditor from "@/app/_components/ProgramEditor";
 import SetPageTitle from "@/app/_components/SetPageTitle";
 import { getClients } from "@/app/_lib/data-service";
 
-async function Page({ searchParams }) {
-  const { clientId } = await searchParams;
+async function Page({ params }) {
+  const { clientId } = await params;
   const clients = await getClients();
 
   return (

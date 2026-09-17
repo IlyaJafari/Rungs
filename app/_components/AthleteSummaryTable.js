@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Avatar, getActiveProgram, StatusBadge } from "../_utils/helpers";
+import Link from "next/link";
 
 const PAGE_SIZE = 5;
 
@@ -38,12 +39,15 @@ function AthleteSummaryTable({ clients }) {
               return (
                 <tr key={client.id}>
                   <td className="text-left font-medium px-4 py-4">
-                    <div className="flex items-center gap-3">
+                    <Link
+                      href={`/clients/${client.id}`}
+                      className="flex items-center gap-3"
+                    >
                       <Avatar client={client} />
                       <div className="flex flex-col">
                         <span>{client.profiles?.full_name}</span>
                       </div>
-                    </div>
+                    </Link>
                   </td>
                   <td className="text-left px-4 py-4">
                     {program ? (

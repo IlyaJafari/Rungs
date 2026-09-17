@@ -128,6 +128,23 @@ export async function getPrograms(clientId) {
   return data;
 }
 
+export async function getProgramName(programId) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("programs")
+    .select("name")
+    .eq("id", programId)
+    .single();
+
+  if (error) {
+    console.error(error);
+    throw new Error("Program could not be loaded");
+  }
+
+  return data.name;
+}
+
 export async function getWorkouts(programId) {
   const supabase = await createClient();
 
@@ -161,6 +178,25 @@ export async function getWorkoutsForWeek(programId, weekNumber) {
   if (error) {
     console.error(error);
     throw new Error("Workouts could not be loaded");
+  }
+
+  return data;
+}
+
+export async function getProgramWithWeeks(programId) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("programs")
+    .select(
+      "id, client_id, name, start_date, workouts(id, week_number, day_number, name, exercises(id, name, target_sets, target_reps, target_weight))",
+    )
+    .eq("id", programId)
+    .single();
+
+  if (error) {
+    console.error(error);
+    throw new Error("Program could not be loaded");
   }
 
   return data;

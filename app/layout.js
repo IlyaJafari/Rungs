@@ -14,7 +14,10 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata = {
-  title: "Rungs",
+  title: {
+    default: "Rungs",
+    template: "%s | Rungs",
+  },
   description:
     "A client-management tool for independent strength coaches who have too many clients for spreadsheets and DMs, and too few clients to justify $70-130/month platforms built for gyms.",
 };

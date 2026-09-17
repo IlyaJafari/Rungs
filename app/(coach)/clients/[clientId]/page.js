@@ -13,6 +13,16 @@ import { Avatar, StatusBadge } from "@/app/_utils/helpers";
 import { ArrowOutUpRightSquare } from "@boxicons/react";
 import Link from "next/link";
 
+export async function generateMetadata({ params }) {
+  const { clientId } = await params;
+
+  const client = await getClient(clientId);
+
+  return {
+    title: client.profiles?.full_name,
+  };
+}
+
 async function Page({ params }) {
   const { clientId } = await params;
   const [client, programs] = await Promise.all([
@@ -46,7 +56,7 @@ async function Page({ params }) {
           </div>
         </div>
         <Link
-          href={`/program-editor/new-program?clientId=${client.id}`}
+          href={`/clients/${clientId}/programs/new`}
           aria-label="Open program editor"
           className="flex items-center gap-2 text-sm bg-iron text-paper p-2 md:px-4 md:py-2 rounded-xl"
         >

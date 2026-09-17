@@ -1,7 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { createProgramWithWeeks } from "../_lib/actions";
+import { useState } from "react";
+import {
+  checkProgramHasLoggedData,
+  createProgramWithWeeks,
+  updateProgramWithWeeks,
+} from "../_lib/actions";
 import { Trash } from "@boxicons/react";
 
 const emptyExercise = () => ({
@@ -22,11 +26,48 @@ const emptyWeek = (weekNumber) => ({
   days: [emptyDay(1)],
 });
 
-function ProgramEditor({ clients, defaultClientId }) {
+function buildWeeksFromProgram(program) {
+  const weekMap = {};
+
+  for (const workout of program.workouts) {
+    if (!weekMap[workout.week_number]) {
+      weekMap[workout.week_number] = {
+        weekNumber: workout.week_number,
+        days: [],
+      };
+    }
+
+    weekMap[workout.week_number].days.push({
+      dayNumber: workout.day_number,
+      name: workout.name,
+      exercises: workout.exercises.length
+        ? workout.exercises.map((ex) => ({
+            name: ex.name,
+            targetSets: ex.target_sets,
+            targetReps: ex.target_reps,
+            targetWeight: ex.target_weight ?? "",
+          }))
+        : [emptyExercise()],
+    });
+  }
+
+  return Object.values(weekMap)
+    .sort((a, b) => a.weekNumber - b.weekNumber)
+    .map((week) => ({
+      ...week,
+      days: week.days.sort((a, b) => a.dayNumber - b.dayNumber),
+    }));
+}
+
+function ProgramEditor({ clients, defaultClientId, program, clientName }) {
+  const isEditMode = Boolean(program);
+
   const [clientId, setClientId] = useState(defaultClientId || "");
-  const [name, setName] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [weeks, setWeeks] = useState([emptyWeek(1)]);
+  const [name, setName] = useState(program?.name || "");
+  const [startDate, setStartDate] = useState(program?.start_date || "");
+  const [weeks, setWeeks] = useState(
+    isEditMode ? buildWeeksFromProgram(program) : [emptyWeek(1)],
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   function addWeek() {
@@ -133,8 +174,34 @@ function ProgramEditor({ clients, defaultClientId }) {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    if (!clientId) return;
 
+    if (isEditMode) {
+      setIsSubmitting(true);
+      try {
+        const hasHistory = await checkProgramHasLoggedData(program.id);
+        if (hasHistory) {
+          const confirmed = window.confirm(
+            "This program has logged workout history, Saving these changes will permanently remove those logged sets. Continue?",
+          );
+          if (!confirmed) {
+            setIsSubmitting(false);
+            return;
+          }
+        }
+        await updateProgramWithWeeks(program.id, {
+          clientId: program.client_id,
+          name,
+          startDate,
+          weeks,
+        });
+      } catch (err) {
+        console.error(err);
+        setIsSubmitting(false);
+      }
+      return;
+    }
+
+    if (!clientId) return;
     setIsSubmitting(true);
     try {
       await createProgramWithWeeks({ clientId, name, startDate, weeks });
@@ -147,27 +214,34 @@ function ProgramEditor({ clients, defaultClientId }) {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6">
       <div className="flex flex-col gap-4 rounded-xl border-2 border-steel p-4">
-        <div className="flex flex-col gap-1">
-          <label htmlFor="client-select" className="text-sm text-slate">
-            Client
-          </label>
-          <select
-            id="client-select"
-            value={clientId}
-            onChange={(e) => setClientId(e.target.value)}
-            required
-            className="bg-steel rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-iron-300"
-          >
-            <option value="" disabled>
-              Select a client...
-            </option>
-            {clients.map((client) => (
-              <option key={client.id} value={client.id}>
-                {client.profiles?.full_name}
+        {isEditMode ? (
+          <div className="flex flex-col gap-1">
+            <span className="text-sm text-slate">Client</span>
+            <span className="font-medium">{clientName}</span>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-1">
+            <label htmlFor="client-select" className="text-sm text-slate">
+              Client
+            </label>
+            <select
+              id="client-select"
+              value={clientId}
+              onChange={(e) => setClientId(e.target.value)}
+              required
+              className="bg-steel rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-iron-300"
+            >
+              <option value="" disabled>
+                Select a client...
               </option>
-            ))}
-          </select>
-        </div>
+              {clients.map((client) => (
+                <option key={client.id} value={client.id}>
+                  {client.profiles?.full_name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <div className="flex flex-col gap-1">
           <label htmlFor="program-name" className="text-sm text-slate">
@@ -210,7 +284,7 @@ function ProgramEditor({ clients, defaultClientId }) {
                 onClick={() => removeWeek(weekIndex)}
                 className="text-xs text-rust"
               >
-                Remove week
+                <Trash />
               </button>
             )}
           </div>
@@ -235,7 +309,7 @@ function ProgramEditor({ clients, defaultClientId }) {
                     onClick={() => removeDay(weekIndex, dayIndex)}
                     className="text-xs text-rust shrink-0"
                   >
-                    Remove day
+                    <Trash />
                   </button>
                 )}
               </div>
@@ -351,7 +425,11 @@ function ProgramEditor({ clients, defaultClientId }) {
         disabled={isSubmitting}
         className="bg-iron text-paper px-4 py-3 rounded-xl hover:bg-iron/80 transition-colors disabled:opacity-50"
       >
-        {isSubmitting ? "Saving..." : "Save program"}
+        {isSubmitting
+          ? "Saving..."
+          : isEditMode
+            ? "Save changes"
+            : "Save program"}
       </button>
     </form>
   );

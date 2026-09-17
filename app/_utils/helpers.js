@@ -32,8 +32,9 @@ export function Avatar({ client, width = 32, height = 32 }) {
 export function StatusBadge({ status }) {
   const styles = {
     active: "border-2 border-moss-200 text-moss",
-    invited: "border-2 border-slate/20 text-slate",
+    invited: "border-2 border-iron/20 text-iron",
     archived: "border-2 border-rust-200 text-rust",
+    completed: "border-2 border-slate/20 text-slate",
   };
 
   return (
