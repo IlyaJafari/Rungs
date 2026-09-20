@@ -128,6 +128,22 @@ export async function getPrograms(clientId) {
   return data;
 }
 
+export async function getActiveProgramCount() {
+  const supabase = await createClient();
+
+  const { count, error } = await supabase
+    .from("programs")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "active");
+
+  if (error) {
+    console.error(error);
+    throw new Error("Programs could not be loaded");
+  }
+
+  return count;
+}
+
 export async function getProgramName(programId) {
   const supabase = await createClient();
 
@@ -330,6 +346,25 @@ export async function getLoggedSets(exerciseId) {
   }
 
   return data;
+}
+
+export async function getSetsLoggedThisWeek() {
+  const supabase = await createClient();
+
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+  const { count, error } = await supabase
+    .from("logged_sets")
+    .select("id", { count: "exact", head: true })
+    .gte("logged_at", sevenDaysAgo.toISOString());
+
+  if (error) {
+    console.error(error);
+    throw new Error("Logged sets could not be loaded");
+  }
+
+  return count;
 }
 
 export async function getCoachNotes(clientId) {

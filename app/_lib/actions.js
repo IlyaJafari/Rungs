@@ -257,3 +257,24 @@ export async function updateProgramWithWeeks(programId, programData) {
   revalidatePath(`/clients/${programData.clientId}`);
   redirect(`/clients/${programData.clientId}/programs/${programId}`);
 }
+
+export async function updateCoachName(fullName) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) throw new Error("Not authenticated");
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({ full_name: fullName })
+    .eq("id", user.id);
+
+  if (error) {
+    console.log(error);
+    throw new Error("Profile could not be updated");
+  }
+
+  revalidatePath("/profile");
+}

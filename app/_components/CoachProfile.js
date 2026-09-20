@@ -2,20 +2,11 @@
 
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import SignOutButtonProfile from "./SignOutButtonProfile";
-import { PlusCircle, UserCircle } from "@boxicons/react";
+import { HelpCircle, PlusCircle, UserCircle } from "@boxicons/react";
 import Link from "next/link";
+import { getInitials } from "../_utils/helpers";
 
 function CoachProfile({ coach }) {
-  function getInitials(fullName) {
-    if (!fullName) return "?";
-    return fullName
-      .split(" ")
-      .map((part) => part[0])
-      .join("")
-      .slice(0, 2)
-      .toUpperCase();
-  }
-
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
@@ -42,14 +33,23 @@ function CoachProfile({ coach }) {
           className="min-w-[180px] bg-paper border border-steel rounded-xl shadow-md p-1 z-50 data-[side=bottom]:animate-slideDownAndFade data-[side=left]:animate-slideLeftAndFade data-[side=top]:animate-slideUpAndFade data-[side=right]:animate-slideRightAndFade"
         >
           <DropdownMenu.Item className="flex items-center gap-2 font-medium px-3 py-2 text-sm rounded-lg cursor-pointer outline-none hover:bg-slate/10">
-            <UserCircle height={16} width={16} />
-            {coach?.full_name}
+            <Link href="/profile" className="flex items-center gap-2">
+              <UserCircle height={16} width={16} />
+              {coach?.full_name}
+            </Link>
           </DropdownMenu.Item>
 
           <DropdownMenu.Item className="font-medium px-3 py-2 text-sm rounded-lg cursor-pointer outline-none hover:bg-slate/10">
             <Link href="/invite" className="flex items-center gap-2">
               <PlusCircle height={16} width={16} />
               Add client
+            </Link>
+          </DropdownMenu.Item>
+
+          <DropdownMenu.Item className="md:hidden font-medium px-3 py-2 text-sm rounded-lg cursor-pointer outline-none hover:bg-slate/10">
+            <Link href="/help" className="flex items-center gap-2">
+              <HelpCircle height={16} width={16} />
+              Help
             </Link>
           </DropdownMenu.Item>
 
