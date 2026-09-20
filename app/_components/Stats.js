@@ -26,7 +26,7 @@ async function Stats() {
       </div>
       <div className="flex justify-between gap-5 border-2 border-steel rounded-xl py-3 px-6">
         <div className="flex flex-col">
-          <span className="uppercase text-sm">need attention</span>
+          <span className="uppercase text-sm">active program</span>
           <span className="font-mono text-xl">{activePrograms}</span>
         </div>
         <ListUl className="text-slate" />
@@ -40,7 +40,7 @@ async function Stats() {
       </div>
       <div className="flex justify-between gap-5 border-2 border-steel rounded-xl py-3 px-6">
         <div className="flex flex-col">
-          <span className="uppercase text-sm">active program</span>
+          <span className="uppercase text-sm">need attention</span>
           <span className="font-mono text-xl">{needingAttention.length}</span>
         </div>
         <Bell className="text-slate" />
