@@ -3,14 +3,24 @@
 import { redirect } from "next/navigation";
 import createClient from "./supabase";
 import { revalidatePath } from "next/cache";
+import { resend } from "./resend";
 
-export async function signInWithGoogle() {
+export async function signInWithGoogle(formData) {
   const supabase = await createClient();
+  const inviteToken = formData.get("invite");
+
+  const callbackUrl = new URL(
+    "/auth/callback",
+    process.env.NEXT_PUBLIC_SITE_URL,
+  );
+  if (inviteToken) {
+    callbackUrl.searchParams.set("invite", inviteToken);
+  }
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
+      redirectTo: callbackUrl.toString(),
     },
   });
 
@@ -277,4 +287,51 @@ export async function updateCoachName(fullName) {
   }
 
   revalidatePath("/profile");
+}
+
+export async function createInvitation({ firstName, lastName, email }) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { data: coach } = await supabase
+    .from("profiles")
+    .select("full_name")
+    .eq("id", user.id)
+    .single();
+
+  const { data: invitation, error } = await supabase
+    .from("invitations")
+    .insert({
+      coach_id: user.id,
+      first_name: firstName,
+      last_name: lastName,
+      email,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error(error);
+    throw new Error("Invitation could not be created");
+  }
+
+  console.log("invitation", invitation);
+
+  const inviteUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/login?invite=${invitation.token}`;
+
+  const { error: emailError } = await resend.emails.send({
+    from: "Rungs <onboarding@resend.dev>",
+    to: email,
+    subject: `${coach?.full_name ?? "Your coach"} invited you to Rungs`,
+    html: `<p>You've been invited to train with ${coach?.full_name ?? "your coach"} on Rungs. </p><p><a href="${inviteUrl}">Accept invitation</a></p>`,
+  });
+
+  if (emailError) {
+    console.error(emailError);
+  }
+
+  return inviteUrl;
 }
