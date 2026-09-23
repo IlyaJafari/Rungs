@@ -1,6 +1,17 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse } from "next/server";
 
+const coachPaths = [
+  "/dashboard",
+  "/clients",
+  "/invite",
+  "/profile",
+  "programs",
+  "/help",
+];
+
+const clientPaths = ["/home"];
+
 export async function middleware(request) {
   let response = NextResponse.next({ request });
 
@@ -30,18 +41,38 @@ export async function middleware(request) {
   } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
-  const protectedPaths = ["/dashboard", "/clients", "/invite", "/profile"];
-  const isProtectedRoute = protectedPaths.some((path) =>
-    pathname.startsWith(path),
-  );
+
+  const isCoachRoute = coachPaths.some((path) => pathname.startsWith(path));
+  const isClientRoute = clientPaths.some((path) => pathname.startsWith(path));
   const isLoginRoute = pathname.startsWith("/login");
 
-  if (isProtectedRoute && !user) {
+  // Not logged in
+  if ((isCoachRoute || isClientRoute) && !user) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  if (isLoginRoute && user) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+  // Logged in, but visiting a role-restricted route
+  if (user && (isCoachRoute || isClientRoute || isLoginRoute)) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+
+    const role = profile?.role;
+
+    if (isCoachRoute && role !== "coach") {
+      return NextResponse.redirect(new URL("/home", request.url));
+    }
+
+    if (isClientRoute && role !== "athlete") {
+      return NextResponse.redirect(new URL("/dashboard", request.url));
+    }
+
+    if (isLoginRoute) {
+      const destination = role === "athlete" ? "/home" : "/dashboard";
+      return NextResponse.redirect(new URL(destination, request.url));
+    }
   }
 
   return response;
