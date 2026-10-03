@@ -39,12 +39,14 @@ function Profile({ profile }) {
             </Link>
           </DropdownMenu.Item>
 
-          <DropdownMenu.Item className="font-medium px-3 py-2 text-sm rounded-lg cursor-pointer outline-none hover:bg-slate/10">
-            <Link href="/invite" className="flex items-center gap-2">
-              <PlusCircle height={16} width={16} />
-              Add client
-            </Link>
-          </DropdownMenu.Item>
+          {profile?.profiles?.role === "athlete" ? null : (
+            <DropdownMenu.Item className="font-medium px-3 py-2 text-sm rounded-lg cursor-pointer outline-none hover:bg-slate/10">
+              <Link href="/invite" className="flex items-center gap-2">
+                <PlusCircle height={16} width={16} />
+                Add client
+              </Link>
+            </DropdownMenu.Item>
+          )}
 
           <DropdownMenu.Item className="md:hidden font-medium px-3 py-2 text-sm rounded-lg cursor-pointer outline-none hover:bg-slate/10">
             <Link href="/help" className="flex items-center gap-2">

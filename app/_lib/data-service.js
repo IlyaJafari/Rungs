@@ -50,7 +50,7 @@ export async function getOwnClientRecord() {
   const { data, error } = await supabase
     .from("clients")
     .select(
-      "id, status, joined_at, profiles!clients_profile_id_fkey(full_name), coach:profiles!clients_coach_id_fkey(full_name, avatar_url)",
+      "id, status, joined_at, profiles!clients_profile_id_fkey(full_name, role), coach:profiles!clients_coach_id_fkey(full_name, avatar_url)",
     )
     .eq("profile_id", user.id)
     .single();
