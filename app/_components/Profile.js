@@ -6,21 +6,21 @@ import { HelpCircle, PlusCircle, UserCircle } from "@boxicons/react";
 import Link from "next/link";
 import { getInitials } from "../_utils/helpers";
 
-function CoachProfile({ coach }) {
+function Profile({ profile }) {
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
         <button className="flex items-center gap-2 outline-none cursor-pointer">
-          {coach?.avatar_url ? (
+          {profile?.avatar_url ? (
             <img
-              src={coach.avatar_url}
+              src={profile.avatar_url}
               alt="Avatar"
               referrerPolicy="no-referrer"
               className="w-11 h-11 rounded-xl object-cover"
             />
           ) : (
             <div className="w-10 h-10 rounded-xl bg-iron-100 flex items-center justify-center text-sm font-medium">
-              {getInitials(coach?.full_name)}
+              {getInitials(profile?.profiles?.full_name)}
             </div>
           )}
         </button>
@@ -35,7 +35,7 @@ function CoachProfile({ coach }) {
           <DropdownMenu.Item className="flex items-center gap-2 font-medium px-3 py-2 text-sm rounded-lg cursor-pointer outline-none hover:bg-slate/10">
             <Link href="/profile" className="flex items-center gap-2">
               <UserCircle height={16} width={16} />
-              {coach?.full_name}
+              {profile?.profiles?.full_name}
             </Link>
           </DropdownMenu.Item>
 
@@ -64,4 +64,4 @@ function CoachProfile({ coach }) {
   );
 }
 
-export default CoachProfile;
+export default Profile;

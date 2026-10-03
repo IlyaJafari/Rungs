@@ -1,18 +1,18 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import SearchBar from "./SearchBar";
-import CoachProfile from "./Profile";
 import { usePageTitle } from "./PageTitleContext";
+import { formatWorkoutDate } from "../_utils/helpers";
+import Profile from "./Profile";
 
-function DashboardHeader({ coach }) {
+function ClientHeader({ client }) {
   const pathname = usePathname();
   const { title } = usePageTitle();
 
-  const isClientDetailPage = /^\/clients\/[0-9a-f-]{36}$/.test(pathname);
-  const isLoading = isClientDetailPage && title === null;
-
+  const isLoading = title === null;
   const heading = title ?? pathname.slice(1);
+
+  const date = new Date();
 
   return (
     <div className="flex items-center justify-between py-4 px-6 border-b border-steel">
@@ -25,11 +25,11 @@ function DashboardHeader({ coach }) {
       )}
 
       <div className="flex items-center gap-3">
-        <SearchBar />
-        <CoachProfile profile={coach} />
+        <p className="text-sm text-slate">{formatWorkoutDate(date)}</p>
+        <Profile profile={client} />
       </div>
     </div>
   );
 }
 
-export default DashboardHeader;
+export default ClientHeader;

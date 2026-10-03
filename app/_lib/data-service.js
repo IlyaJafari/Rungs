@@ -38,6 +38,31 @@ export async function getClient(id) {
   return data;
 }
 
+export async function getOwnClientRecord() {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return null;
+
+  const { data, error } = await supabase
+    .from("clients")
+    .select(
+      "id, status, joined_at, profiles!clients_profile_id_fkey(full_name), coach:profiles!clients_coach_id_fkey(full_name, avatar_url)",
+    )
+    .eq("profile_id", user.id)
+    .single();
+
+  if (error) {
+    console.error(error);
+    throw new Error("Client record could not be loaded");
+  }
+
+  return data;
+}
+
 export async function getBodyWeightLogs(clientId) {
   const supabase = await createClient();
 

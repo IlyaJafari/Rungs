@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { format } from "date-fns";
 
 export function getInitials(fullName) {
   if (!fullName) return "?";
@@ -60,4 +61,8 @@ export function timeAgo(timestamp) {
   if (minutes < 60) return `${minutes}m ago`;
   if (hours < 24) return `${hours}h ago`;
   return `${days}d ago`;
+}
+
+export function formatWorkoutDate(date) {
+  return format(date, "EEEE, MMMM d");
 }

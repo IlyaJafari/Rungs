@@ -282,7 +282,7 @@ export async function updateCoachName(fullName) {
     .eq("id", user.id);
 
   if (error) {
-    console.log(error);
+    console.error(error);
     throw new Error("Profile could not be updated");
   }
 
@@ -317,8 +317,6 @@ export async function createInvitation({ firstName, lastName, email }) {
     console.error(error);
     throw new Error("Invitation could not be created");
   }
-
-  console.log("invitation", invitation);
 
   const inviteUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/login?invite=${invitation.token}`;
 

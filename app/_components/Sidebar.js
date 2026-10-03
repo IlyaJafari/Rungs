@@ -14,7 +14,7 @@ import SignOutButton from "./SignOutButton";
 
 function Sidebar() {
   return (
-    <div className="hidden md:flex md:flex-col md:justify-between sticky top-0 h-screen bg-steel px-6 py-3">
+    <div className="hidden md:flex md:flex-col md:justify-between sticky top-0 h-screen px-6 py-3 border-r border-steel">
       <div className="flex flex-col gap-2">
         <Link href="/dashboard" aria-label="Rungs home" className="pl-3 pb-3">
           <Logo />

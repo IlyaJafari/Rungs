@@ -11,7 +11,7 @@ function NavLink({ href, children, coloredButton }) {
   return (
     <Link
       href={href}
-      className={`flex items-center gap-2 pl-3 py-2 rounded-xl ${isColoredButton ? "text-iron" : ""} ${isSelected ? "bg-paper" : ""}`}
+      className={`flex items-center gap-3 w-full px-4 p-3 rounded-xl transition-colors ${isColoredButton ? "text-iron" : ""} ${isSelected ? "bg-iron-100/80 text-iron font-semibold" : "text-slate hover:bg-iron-100/80 hover:text-iron"}`}
     >
       {children}
     </Link>
