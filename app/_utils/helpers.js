@@ -66,3 +66,21 @@ export function timeAgo(timestamp) {
 export function formatWorkoutDate(date) {
   return format(date, "EEEE, MMMM d");
 }
+
+export function estimateWorkoutDuration(workout) {
+  const exercises = workout?.exercises ?? [];
+  if (exercises.length === 0) return "0 min";
+
+  const totalSeconds = exercises.reduce((total, exercise, index) => {
+    const sets = Number(exercise.target_sets) || 0;
+    const reps = Number(exercise.target_reps) || 0;
+
+    const workoutSeconds = sets * reps * 3;
+    const restSeconds = Math.max(sets - 1, 0) * 90;
+    const transitionSeconds = index < exercises.length - 1 ? 120 : 0;
+
+    return total + workoutSeconds + restSeconds + transitionSeconds;
+  }, 0);
+
+  return `${Math.ceil(totalSeconds / 60)} min`;
+}

@@ -20,7 +20,7 @@ function Profile({ profile }) {
             />
           ) : (
             <div className="w-10 h-10 rounded-xl bg-iron-100 flex items-center justify-center text-sm font-medium">
-              {getInitials(profile?.profiles?.full_name)}
+              {getInitials(profile?.full_name)}
             </div>
           )}
         </button>
@@ -35,11 +35,11 @@ function Profile({ profile }) {
           <DropdownMenu.Item className="flex items-center gap-2 font-medium px-3 py-2 text-sm rounded-lg cursor-pointer outline-none hover:bg-slate/10">
             <Link href="/profile" className="flex items-center gap-2">
               <UserCircle height={16} width={16} />
-              {profile?.profiles?.full_name}
+              {profile?.full_name}
             </Link>
           </DropdownMenu.Item>
 
-          {profile?.profiles?.role === "athlete" ? null : (
+          {profile?.role === "athlete" ? null : (
             <DropdownMenu.Item className="font-medium px-3 py-2 text-sm rounded-lg cursor-pointer outline-none hover:bg-slate/10">
               <Link href="/invite" className="flex items-center gap-2">
                 <PlusCircle height={16} width={16} />

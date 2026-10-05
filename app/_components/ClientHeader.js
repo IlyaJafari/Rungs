@@ -5,7 +5,7 @@ import { usePageTitle } from "./PageTitleContext";
 import { formatWorkoutDate } from "../_utils/helpers";
 import Profile from "./Profile";
 
-function ClientHeader({ client }) {
+function ClientHeader({ profile }) {
   const pathname = usePathname();
   const { title } = usePageTitle();
 
@@ -26,7 +26,7 @@ function ClientHeader({ client }) {
 
       <div className="flex items-center gap-3">
         <p className="text-sm text-slate">{formatWorkoutDate(date)}</p>
-        <Profile profile={client} />
+        <Profile profile={profile} />
       </div>
     </div>
   );

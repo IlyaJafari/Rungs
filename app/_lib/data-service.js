@@ -204,6 +204,68 @@ export async function getWorkouts(programId) {
   return data;
 }
 
+export async function getTodaysWorkout(clientId) {
+  const supabase = await createClient();
+
+  const { data: program, error: programErr } = await supabase
+    .from("programs")
+    .select("id, name, start_date")
+    .eq("client_id", clientId)
+    .eq("status", "active")
+    .maybeSingle();
+
+  if (programErr) {
+    console.error(programErr);
+    throw new Error("Program could not be loaded");
+  }
+
+  if (!program) return null;
+
+  const startDate = new Date(program.start_date);
+  const today = new Date();
+
+  const elapsedDays = Math.floor(
+    (today.setHours(0, 0, 0, 0) - startDate.setHours(0, 0, 0, 0)) /
+      (1000 * 60 * 60 * 24),
+  );
+
+  if (elapsedDays < 0) return null;
+
+  const weekNumber = Math.floor(elapsedDays / 7) + 1;
+  const dayNumber = (elapsedDays % 7) + 1;
+
+  const { data: workout, error: workoutErr } = await supabase
+    .from("workouts")
+    .select(
+      "id, name, exercises(id, name, target_sets, target_reps, target_weight)",
+    )
+    .eq("program_id", program.id)
+    .eq("week_number", weekNumber)
+    .eq("day_number", dayNumber)
+    .maybeSingle();
+
+  if (workoutErr) {
+    console.error(workoutErr);
+    throw new Error("Today's workout could not be loaded");
+  }
+
+  if (!workout) {
+    return {
+      workout: null,
+      programName: program.name,
+      weekNumber,
+      dayNumber,
+    };
+  }
+
+  return {
+    workout,
+    programName: program.name,
+    weekNumber,
+    dayNumber,
+  };
+}
+
 export async function getWorkoutsForWeek(programId, weekNumber) {
   const supabase = await createClient();
 
