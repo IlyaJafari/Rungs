@@ -18,7 +18,7 @@ export function Avatar({ client, width = 32, height = 32 }) {
       alt="user avatar"
       width={width}
       height={height}
-      className="rounded-full"
+      className="rounded-xl"
     />
   ) : (
     <div

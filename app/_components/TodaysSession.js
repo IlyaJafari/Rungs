@@ -7,19 +7,17 @@ async function TodaysSession({ client }) {
   const clientId = client?.id;
   const todaysWorkout = await getTodaysWorkout(clientId);
 
-  console.log(todaysWorkout);
-
   return (
     <div className="flex flex-col gap-5 bg-iron-100 p-7 rounded-xl border border-steel">
       <h3 className="text-xs font-bold uppercase text-iron">
         Today&apos;s session
       </h3>
 
-      {todaysWorkout ? (
+      {todaysWorkout.workout.exercises.length > 1 ? (
         <div className="flex flex-col gap-5">
           <div className="flex flex-col gap-2">
             <h2 className="text-3xl font-medium">
-              {todaysWorkout.workout.name}
+              {todaysWorkout.workout?.name}
             </h2>
             <p className="text-sm text-slate">
               {todaysWorkout.programName} · day {todaysWorkout.dayNumber} of
@@ -31,7 +29,7 @@ async function TodaysSession({ client }) {
             <div className="flex flex-col gap-1">
               <p className="text-xs text-slate">Exercises</p>
               <p className="font-medium">
-                {todaysWorkout.workout.exercises.length}
+                {todaysWorkout.workout?.exercises.length}
               </p>
             </div>
             <div className="flex flex-col gap-1">

@@ -286,6 +286,53 @@ export async function getWorkoutsForWeek(programId, weekNumber) {
   return data;
 }
 
+export async function getRecentTrainings(clientId, limit = 5) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("logged_sets")
+    .select(
+      "logged_at, actual_reps, actual_weight, exercises(workout_id, workouts(name, week_number, day_number))",
+    )
+    .eq("client_id", clientId)
+    .order("logged_at", { ascending: false });
+
+  if (error) {
+    console.error(error);
+    throw new Error("Recent trainings could not be loaded");
+  }
+
+  // One session = one workout on one calendar day.
+  const sessions = {};
+
+  for (const set of data) {
+    const workout = set.exercises?.workouts;
+    const workoutId = set.exercises?.workout_id;
+    if (!workoutId) continue;
+
+    const day = set.logged_at.slice(0, 10); // YYYY-MM-DD
+    const key = `${workoutId}-${day}`;
+
+    if (!sessions[key]) {
+      sessions[key] = {
+        date: set.logged_at,
+        workoutName: workout?.name ?? "Workout",
+        weekNumber: workout?.week_number,
+        dayNumber: workout?.day_number,
+        setCount: 0,
+        volume: 0,
+      };
+    }
+
+    sessions[key].setCount += 1;
+    sessions[key].volume += (set.actual_reps ?? 0) * (set.actual_weight ?? 0);
+  }
+
+  return Object.values(sessions)
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .slice(0, limit);
+}
+
 export async function getProgramWithWeeks(programId) {
   const supabase = await createClient();
 
