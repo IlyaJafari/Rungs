@@ -1,5 +1,6 @@
 import ClientHeader from "../_components/ClientHeader";
 import ClientSidebar from "../_components/ClientSidebar";
+import MobileNav from "../_components/MobileNav";
 import { PageTitleProvider } from "../_components/PageTitleContext";
 import { getOwnClientRecord } from "../_lib/data-service";
 
@@ -21,6 +22,8 @@ async function ClientLayout({ children }) {
           <div className="flex-1 overflow-y-auto px-6 py-8">{children}</div>
         </div>
       </div>
+
+      <MobileNav variant="client" />
     </PageTitleProvider>
   );
 }
