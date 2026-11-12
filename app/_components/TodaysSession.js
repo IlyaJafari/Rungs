@@ -13,7 +13,7 @@ async function TodaysSession({ client }) {
         Today&apos;s session
       </h3>
 
-      {todaysWorkout.workout.exercises.length > 1 ? (
+      {todaysWorkout.workout?.exercises?.length > 1 ? (
         <div className="flex flex-col gap-5">
           <div className="flex flex-col gap-2">
             <h2 className="text-3xl font-medium">

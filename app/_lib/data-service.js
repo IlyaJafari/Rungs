@@ -169,6 +169,83 @@ export async function getActiveProgramCount() {
   return count;
 }
 
+export async function getActiveProgramOverview(clientId) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("programs")
+    .select("id, name, start_date, workouts(id, week_number, day_number)")
+    .eq("client_id", clientId)
+    .eq("status", "active")
+    .maybeSingle();
+
+  if (error) {
+    console.error(error);
+    throw new Error("Program could not be loaded");
+  }
+
+  if (!data) return null;
+
+  const { data: completions, error: completionErr } = await supabase
+    .from("workout_completions")
+    .select("workout_id")
+    .eq("client_id", clientId)
+    .in(
+      "workout_id",
+      data.workouts.map((w) => w.id),
+    );
+
+  if (completionErr) {
+    console.error(completionErr);
+    throw new Error("Program could not be loaded");
+  }
+
+  const completedIds = new Set(completions.map((c) => c.workout_id));
+
+  // Per-week totals: how many workouts exist and how many are finished.
+  const weekProgress = {};
+  for (const w of data.workouts) {
+    if (!weekProgress[w.week_number]) {
+      weekProgress[w.week_number] = { total: 0, completed: 0 };
+    }
+    weekProgress[w.week_number].total += 1;
+    if (completedIds.has(w.id)) weekProgress[w.week_number].completed += 1;
+  }
+
+  const weekNumbers = Object.keys(weekProgress)
+    .map(Number)
+    .sort((a, b) => a - b);
+  const totalWeeks = weekNumbers.at(-1) ?? 0;
+  const sessionsPerWeek = Math.max(
+    0,
+    ...Object.values(weekProgress).map((w) => w.total),
+  );
+
+  const endDate = new Date(data.start_date);
+  endDate.setDate(endDate.getDate() + totalWeeks * 7 - 1);
+
+  const startDate = new Date(data.start_date);
+  const today = new Date();
+  startDate.setHours(0, 0, 0, 0);
+  today.setHours(0, 0, 0, 0);
+  const elapsedDays = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
+  const rawWeek = Math.floor(elapsedDays / 7) + 1;
+  const currentWeek = Math.min(Math.max(rawWeek, 1), totalWeeks || 1);
+
+  return {
+    id: data.id,
+    name: data.name,
+    start_date: data.start_date,
+    endDate,
+    totalWeeks,
+    weekNumbers,
+    sessionsPerWeek,
+    currentWeek,
+    completedCount: completions.length,
+    weekProgress,
+  };
+}
+
 export async function getProgramName(programId) {
   const supabase = await createClient();
 
@@ -202,6 +279,43 @@ export async function getWorkouts(programId) {
   }
 
   return data;
+}
+
+export async function getWorkoutStatuses(clientId, workoutIds) {
+  if (workoutIds.length === 0) return {};
+
+  const supabase = await createClient();
+
+  const [completions, sets] = await Promise.all([
+    supabase
+      .from("workout_completions")
+      .select("workout_id")
+      .eq("client_id", clientId)
+      .in("workout_id", workoutIds),
+    supabase
+      .from("logged_sets")
+      .select("exercises!inner(workout_id)")
+      .eq("client_id", clientId)
+      .in("exercises.workout_id", workoutIds),
+  ]);
+
+  if (completions.error || sets.error) {
+    console.error(completions.error ?? sets.error);
+    throw new Error("Workout statuses could not be loaded");
+  }
+
+  const completed = new Set(completions.data.map((c) => c.workout_id));
+  const started = new Set(sets.data.map((s) => s.exercises.workout_id));
+
+  const statuses = {};
+  for (const id of workoutIds) {
+    statuses[id] = completed.has(id)
+      ? "complete"
+      : started.has(id)
+        ? "in_progress"
+        : "not_started";
+  }
+  return statuses;
 }
 
 export async function getTodaysWorkout(clientId) {

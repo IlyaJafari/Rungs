@@ -268,6 +268,41 @@ export async function updateProgramWithWeeks(programId, programData) {
   redirect(`/clients/${programData.clientId}/programs/${programId}`);
 }
 
+export async function completeWorkout(workoutId) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated");
+
+  const { data: client, error: clientErr } = await supabase
+    .from("client")
+    .select("id")
+    .eq("profile_id", user.id)
+    .single();
+
+  if (clientErr) {
+    console.error(clientErr);
+    throw new Error("Client record could not be loaded");
+  }
+
+  const { error } = await supabase
+    .from("workouts")
+    .upsert(
+      { client_id: client.id, workout_id: workoutId },
+      { onConflict: "client_id, workout_id", ignoreDuplicates: true },
+    );
+
+  if (error) {
+    console.error(error);
+    throw new Error("Workout could not be complicated");
+  }
+
+  revalidatePath("/program");
+  revalidatePath("/home");
+}
+
 export async function updateCoachName(fullName) {
   const supabase = await createClient();
   const {

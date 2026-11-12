@@ -11,6 +11,8 @@ export async function GET(request) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
+    if (error) console.error("code exchange failed:", error);
+
     if (!error) {
       const {
         data: { user },
@@ -80,6 +82,8 @@ export async function GET(request) {
           });
 
           role = "coach";
+
+          console.error("callback hit with no code:", request.url);
         }
       }
 
