@@ -1,18 +1,7 @@
-import {
-  getOwnClientRecord,
-  getActiveProgramOverview,
-  getWorkoutStatuses,
-} from "@/app/_lib/data-service";
 import { format } from "date-fns";
 import ProgramProgress from "./ProgramProgress";
 
-async function ProgramOverview({ week }) {
-  const client = await getOwnClientRecord();
-  const program = await getActiveProgramOverview(client.id);
-
-  console.log("CLIENT", client);
-  console.log("PROGRAM", program);
-
+async function ProgramOverview({ program }) {
   if (!program) return <p>No active program yet.</p>;
 
   return (

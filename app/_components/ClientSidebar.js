@@ -30,14 +30,14 @@ function ClientSidebar() {
             <span>My Program</span>
           </NavLink>
           <NavLink
-            href="/program"
+            href="/progress"
             className="flex items-center gap-2 p-4 text-slate"
           >
             <ChartTrend />
             <span>Progress</span>
           </NavLink>
           <NavLink
-            href="/program"
+            href="/profile"
             className="flex items-center gap-2 p-4 text-slate"
           >
             <User />

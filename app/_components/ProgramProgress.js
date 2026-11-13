@@ -9,7 +9,7 @@ function ProgramProgress({ program }) {
     : 0;
 
   return (
-    <div className="rounded-lg p-4">
+    <div className="rounded-lg">
       <div className="mb-3 flex items-center justify-between">
         <span className="text-sm font-medium text-ink">
           Week {program.currentWeek} of {program.totalWeeks}
