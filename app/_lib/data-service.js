@@ -400,6 +400,54 @@ export async function getWorkoutsForWeek(programId, weekNumber) {
   return data;
 }
 
+export async function getWorkoutForLogging(workoutId, clientId) {
+  const supabase = await createClient();
+
+  const { data: workout, error } = await supabase
+    .from("workouts")
+    .select(
+      "id, name, week_number, day_number, exercises(id, name, target_sets, target_reps, target_weight)",
+    )
+    .eq("id", workoutId)
+    .maybeSingle();
+
+  if (error) {
+    if (error.code === "22P02") return null;
+    console.error(error);
+    throw new Error("Workout could not be loaded");
+  }
+
+  if (!workout) return null;
+
+  const [setsResult, completionResult] = await Promise.all([
+    supabase
+      .from("logged_sets")
+      .select("exercise_id, set_number, actual_reps, actual_weight, actual_rpe")
+      .eq("client_id", clientId)
+      .in(
+        "exercise_id",
+        workout.exercises.map((exercise) => exercise.id),
+      ),
+    supabase
+      .from("workout_completions")
+      .select("id")
+      .eq("client_id", clientId)
+      .eq("workout_id", workoutId)
+      .maybeSingle(),
+  ]);
+
+  if (setsResult.error || completionResult.error) {
+    console.error(setsResult.error ?? completionResult.error);
+    throw new Error("Workout could not be loaded");
+  }
+
+  return {
+    ...workout,
+    loggedSets: setsResult.data,
+    isComplete: Boolean(completionResult.data),
+  };
+}
+
 export async function getRecentTrainings(clientId, limit = 5) {
   const supabase = await createClient();
 

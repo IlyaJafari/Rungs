@@ -368,3 +368,58 @@ export async function createInvitation({ firstName, lastName, email }) {
 
   return inviteUrl;
 }
+
+export async function logSet({ exerciseId, setNumber, reps, weight, rpe }) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated");
+
+  const repsNum = Number.parseInt(reps, 10);
+  const weightNum = weight === "" || weight == null ? null : Number(weight);
+  const rpeNum = rpe === "" || rpe == null ? null : Number(rpe);
+
+  if (
+    !Number.isInteger(repsNum) ||
+    repsNum < 0 ||
+    Number.isNaN(weightNum) ||
+    (weightNum !== null && weightNum < 0) ||
+    Number.isNaN(rpeNum) ||
+    (rpeNum !== null && (rpeNum < 1 || rpeNum > 10))
+  ) {
+    throw new Error("Invalid set values");
+  }
+
+  const { data: client, error: clientErr } = await supabase
+    .from("client")
+    .select("id")
+    .eq("profile_id", user.id)
+    .single();
+
+  if (clientErr) {
+    console.error(clientErr);
+    throw new Error("Client record could not be loaded");
+  }
+
+  const { error } = await supabase.from("logged_sets").upsert(
+    {
+      client_id: client.id,
+      exercise_id: exerciseId,
+      set_number: setNumber,
+      actual_reps: repsNum,
+      actual_weight: weightNum,
+      actual_rpe: rpeNum,
+      logged_at: new Date().toISOString(),
+    },
+    {
+      onConflict: "client_id,exercise_id,set_number",
+    },
+  );
+
+  if (error) {
+    console.error(error);
+    throw new Error("Set could not be saved");
+  }
+}

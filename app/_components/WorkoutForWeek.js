@@ -40,7 +40,7 @@ async function WorkoutForWeek({ programId, selectedWeek }) {
 
             <div className="mt-auto flex items-center justify-center p-4.5">
               <Link
-                href="#"
+                href={`/program/${workout.id}`}
                 className="font-semibold text-iron text-sm w-full text-center border-3 border-steel rounded-lg p-3"
               >
                 View workout

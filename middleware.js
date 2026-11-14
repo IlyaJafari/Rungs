@@ -10,7 +10,7 @@ const coachPaths = [
   "/help",
 ];
 
-const clientPaths = ["/home"];
+const clientPaths = ["/home", "/program", "/progress", "/profile"];
 
 export async function middleware(request) {
   let response = NextResponse.next({ request });
